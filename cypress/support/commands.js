@@ -24,19 +24,35 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('concurrentLogins', (user) => {
-    // const promises = users.map(user => {
-    cy.visit('/');//باز کردن وب سایت
-    cy.get('#profile > [href="/"]').click()//رفتن به صفحه لاگین 
+Cypress.Commands.add("login", (username, password, captchaValue) => {
+  cy.get("#profile > [href='/']").click({ force: true });
+  cy.wait(750);
 
-    cy.url().should('include', '/sso/login')// چک کردن وارد شدن در صفحه لاگین
-    cy.get('#username').type(user.username)//وارد کردن نام کاربری
-    cy.get('#password').type(user.password)//وارد کردن پسور
-    cy.get('#captchaValue').type('111111')//وارد کردن کد کپچا
-    cy.get('.login100-form-btn').click()//انجام عملیات لاگین
+  cy.url().should("include", "/sso/login");
+  cy.wait(750);
 
-    // cy.url().should('include', 'qhami.com')//چک کردن بازگشت به صفحه اصلی بعد از لاگین 
+  cy.get("#username").click({ force: true }).type(username);
+  cy.wait(750);
+
+  cy.get("#password").click({ forec: true }).type(password);
+  cy.wait(750);
+
+  cy.get("#captchaValue").click({ force: true }).type(captchaValue);
+  cy.wait(750);
+
+  cy.get(".login100-form-btn").click({ force: true });
+
+  cy.wait(750);
 });
 
-    // cy.wrap(Promise.all(promises));
+Cypress.Commands.add("InputType", (element, typeInput, textPropmt) => {
+  cy.get(element).then(() => {
+    cy.window().then(() => {
+      const password = typeInput(window.prompt(textPropmt));
+      cy.get(element).type(password);
+    });
+  });
+});
+
+// cy.wrap(Promise.all(promises));
 // });
